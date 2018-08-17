@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/koopdev/bloccit/issues"
   },
-  "homepage": "https://github.com/koopdev/bloccit#readme",
+  "homepage": "https://koopdev-bloccit.herokuapp.com/",
   "devDependencies": {
     "jasmine": "^3.0.0",
     "request": "^2.83.0"
