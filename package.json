@@ -1,32 +1,36 @@
 {
-  "name": "bloccit",
-  "version": "1.0.0",
-  "description": "A Reddit-like application for users to discuss and share content",
-  "main": "(src/server.js)",
-  "scripts": {
-    "test": "export NODE_ENV=test && jasmine",
-    "start": "node src/server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/koopdev/bloccit.git"
-  },
-  "keywords": [
-    "Reddit-clone",
-    "Bloc"
-  ],
-  "author": "koop",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/koopdev/bloccit/issues"
-  },
-  "homepage": "https://koopdev-bloccit.herokuapp.com/",
-  "devDependencies": {
-    "jasmine": "^3.0.0",
-    "request": "^2.83.0"
-  },
-  "dependencies": {
-    "dotenv": "^5.0.0",
-    "express": "^4.16.2"
-  }
+	"name": "bloccit",
+	"version": "1.0.0",
+	"description": "A Reddit-like application for users to discuss and share content",
+	"main": "(src/server.js)",
+	"scripts": {
+		"test": "export NODE_ENV=test && jasmine",
+		"start": "node src/server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@github.com/koopdev/bloccit.git"
+	},
+	"keywords": [
+		"Reddit-clone",
+		"Bloc"
+	],
+	"author": "koop",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/koopdev/bloccit/issues"
+	},
+	"homepage": "https://koopdev-bloccit.herokuapp.com/",
+	"devDependencies": {
+		"jasmine": "^3.0.0",
+		"request": "^2.83.0"
+	},
+	"dependencies": {
+		"dotenv": "^5.0.0",
+		"express": "^4.16.2"
+	},
+	"engines": {
+		"node": "9.11.1",
+		"npm": "5.6.0"
+	}
 }
