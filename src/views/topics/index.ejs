@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../static/partials/head.ejs %>
+  </head>
+  <body>
+    <main class="container">
+      <% include ../static/partials/navbar.ejs %>
+
+      <h1>Topics</h1>
+
+      <ul class="list-group">
+<!-- #1 In this template, we have access to topics which would be a variable containing all topics. We loop over the topics and for each topic, display it. Notice that this is plain JavaScript. EJS tags just allow us to evaluate JavaScript where needed. Also notice the closing } and ) are still needed and evaluated inside EJS tags where needed as well. -->
+        <% topics.forEach((topic) => { %>
+<!-- #2 For each topic, we are generating an HTML tag with an href attribute pointing to a route we've yet to define. We can use EJS tags inside of strings and they will evaluate as expected. -->
+          <li class="list-group-item">
+            <a href="/topics/<%= topic.id %>"> <%= topic.title %> </a>
+          </li>
+        <% }) %>
+      </ul>
+
+    </main>
+  </body>
+</html>
