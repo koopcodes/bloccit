@@ -38,4 +38,34 @@ module.exports = {
 			}
 		});
 	},
+
+	destroy(req, res, next) {
+		topicQueries.deleteTopic(req.params.id, (err, topic) => {
+			if (err) {
+				res.redirect(500, '/topics/${topic.id}');
+			} else {
+				res.redirect(303, '/topics');
+			}
+		});
+	},
+
+	edit(req, res, next) {
+		topicQueries.getTopic(req.params.id, (err, topic) => {
+			if (err || topic == null) {
+				res.redirect(404, '/');
+			} else {
+				res.render('topics/edit', { topic });
+			}
+		});
+	},
+
+	update(req, res, next) {
+		topicQueries.updateTopic(req.params.id, req.body, (err, topic) => {
+			if (err || topic == null) {
+				res.redirect(404, `/topics/${req.params.id}/edit`);
+			} else {
+				res.redirect(`/topics/${topic.id}`);
+			}
+		});
+	},
 };
