@@ -8,12 +8,12 @@
 
     <main class="container">
       <h1><%= topic.title %></h1>
-				<a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
 				<a href="/topics/<%= topic.id %>/posts/new" class="btn btn-success">New Post</a>
+				<a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
 				<form style="display:initial" action="/topics/<%= topic.id %>/destroy" method="post">
        		<button type="submit" class="btn btn-danger">Delete</button>
      		</form>
-
+				<a href="/topics/<%= topic.id %>/flairs/new" class="btn btn-success">New Flair</a>
       <p><%= topic.description %></p>
 			<hr>
 
@@ -26,6 +26,18 @@
 				</li>
     		<% }) %>
   		</ul>
+			<hr>
+
+			<h1>Flairs</h1>
+
+      <ul class="list-group">
+        <% topic.flairs.forEach((flair) => { %>
+        <li class="list-group-item">
+          <a href="/topics/<%= topic.id %>/flairs/<%= flair.id %>"> <%= flair.name %> </a>
+        </li>
+        <% }) %>
+       </ul>
+
     </main>
 
     <% include ../static/partials/baseScripts.ejs %>
