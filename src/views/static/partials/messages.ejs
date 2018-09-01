@@ -1,0 +1,18 @@
+<!-- #1 We set messages on the request by running  req.flash("error", "Insufficient Sauce"). In the next rendered view, we can access this message by using the first argument (type) to get the value passed. In the view, we are given an object called messages with key/value pairs matching type and value passed to flash. Here, we check if there is a key called error which tells us there is an error to report. -->
+<% if(messages.error) { %>
+
+<!-- #2 We use a bootstrap alert class to give users a visual cue -->
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    Validation errors:
+    <ul>
+
+<!-- #3 In this case, the key error is an array of validation error objects. We loop over the array displaying the param that caused the error as well as the associated message (msg) from the validation method -->
+      <% messages.error.forEach((err) => { %>
+        <li><%= `${err.param} ${err.msg}` %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>

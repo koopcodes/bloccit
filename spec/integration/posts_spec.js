@@ -69,6 +69,30 @@ describe('routes : posts', () => {
 					});
 			});
 		});
+
+		it('should not create a new post that fails validations', done => {
+			const options = {
+				url: `${base}/${this.topic.id}/posts/create`,
+				form: {
+					//#1 We are pass in values that should not pass validations.
+					title: 'a',
+					body: 'b',
+				},
+			};
+
+			request.post(options, (err, res, body) => {
+				//#2 We look for a post matching the title passed in with the request and confirm that one doesn't exist
+				Post.findOne({ where: { title: 'a' } })
+					.then(post => {
+						expect(post).toBeNull();
+						done();
+					})
+					.catch(err => {
+						console.log(err);
+						done();
+					});
+			});
+		});
 	});
 
 	describe('GET /topics/:topicId/posts/:id', () => {
@@ -127,6 +151,7 @@ describe('routes : posts', () => {
 				url: `${base}/${this.topic.id}/posts/${this.post.id}/update`,
 				form: {
 					title: 'Snowman Building Competition',
+					body: 'I love watching them melt slowly.',
 				},
 			};
 			request.post(options, (err, res, body) => {
