@@ -18,7 +18,6 @@ module.exports = {
 				secret: process.env.cookieSecret,
 				resave: false,
 				saveUninitialized: false,
-				cookie: { maxAge: 60000 },
 				cookie: { maxAge: 1.21e9 }, //set cookie to expire in 14 days
 			}),
 		);
