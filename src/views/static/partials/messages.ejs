@@ -1,11 +1,13 @@
 <!-- #1 We set messages on the request by running  req.flash("error", "Insufficient Sauce"). In the next rendered view, we can access this message by using the first argument (type) to get the value passed. In the view, we are given an object called messages with key/value pairs matching type and value passed to flash. Here, we check if there is a key called error which tells us there is an error to report. -->
-<% if(messages.error) { %>
+<% if(messages.error || messages.notice) { %> <!-- #1 We check to see if either an error or notice property is present, and use this to determine what class to use for the alert. -->
 
 <!-- #2 We use a bootstrap alert class to give users a visual cue -->
-  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <div class="alert alert-<%= messages.error ? 'danger' : 'warning' %> alert-dismissible fade show" role="alert">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
+		<!-- #2 If we have an error, we use the loop we utilized before. If we have a notice, we evaluate it since it is just a string. -->
+		<% if(messages.error) { %>
     Validation errors:
     <ul>
 
@@ -14,5 +16,8 @@
         <li><%= `${err.param} ${err.msg}` %></li>
       <% }) %>
     </ul>
+		<% } else { %>
+			<p><%= messages.notice %></p>
+    <% } %>
   </div>
 <% } %>
