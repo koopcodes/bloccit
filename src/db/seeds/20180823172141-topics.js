@@ -4,7 +4,7 @@ let topics = [];
 
 for (let i = 1; i <= 15; i++) {
 	topics.push({
-		title: faker.hacker.noun(),
+		title: faker.company.catchPhrase(),
 		description: faker.hacker.phrase(),
 		createdAt: new Date(),
 		updatedAt: new Date(),
