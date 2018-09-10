@@ -1,4 +1,5 @@
 const postQueries = require('../db/queries.posts.js');
+const helper = require('../auth/helpers');
 
 module.exports = {
 	new(req, res, next) {
@@ -10,6 +11,7 @@ module.exports = {
 			title: req.body.title,
 			body: req.body.body,
 			topicId: req.params.topicId,
+			userId: req.user.id,
 		};
 		postQueries.addPost(newPost, (err, post) => {
 			if (err) {
@@ -50,14 +52,13 @@ module.exports = {
 		});
 	},
 
-	update(req, res, next){
-    postQueries.updatePost(req.params.id, req.body, (err, post) => {
-      if(err || post == null){
-        res.redirect(404, `/topics/${req.params.topicId}/posts/${req.params.id}/edit`);
-      } else {
-        res.redirect(`/topics/${req.params.topicId}/posts/${req.params.id}`);
-      }
-    });
-  },
-
+	update(req, res, next) {
+		postQueries.updatePost(req.params.id, req.body, (err, post) => {
+			if (err || post == null) {
+				res.redirect(404, `/topics/${req.params.topicId}/posts/${req.params.id}/edit`);
+			} else {
+				res.redirect(`/topics/${req.params.topicId}/posts/${req.params.id}`);
+			}
+		});
+	},
 };

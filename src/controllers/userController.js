@@ -10,11 +10,11 @@ module.exports = {
 		res.render('users/sign_in');
 	},
 
-	signOut(req, res, next){
-     req.logout();
-     req.flash("notice", "You've successfully signed out!");
-     res.redirect("/");
-   },
+	signOut(req, res, next) {
+		req.logout();
+		req.flash('notice', 'You\'ve successfully signed out!');
+		res.redirect('/');
+	},
 
 	signIn(req, res, next) {
 		passport.authenticate('local')(req, res, function() {

@@ -8,8 +8,11 @@
       <% include ../static/partials/navbar.ejs %>
 
       <h1>Topics</h1>
-				<a href="/topics/new" class="btn btn-success">New Topic</a>
-      <ul class="list-group">
+			<!-- We check that currentUser is present and then && the answer to isAdmin. -->
+   <% if(currentUser && currentUser.isAdmin()) { %>
+     <a href="/topics/new" class="btn btn-success">New Topic</a>
+   <% } %>
+	  	<ul class="list-group">
 <!-- #1 In this template, we have access to topics which would be a variable containing all topics. We loop over the topics and for each topic, display it. Notice that this is plain JavaScript. EJS tags just allow us to evaluate JavaScript where needed. Also notice the closing } and ) are still needed and evaluated inside EJS tags where needed as well. -->
         <% topics.forEach((topic) => { %>
 <!-- #2 For each topic, we are generating an HTML tag with an href attribute pointing to a route we've yet to define. We can use EJS tags inside of strings and they will evaluate as expected. -->
