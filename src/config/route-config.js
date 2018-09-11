@@ -4,7 +4,7 @@ module.exports = {
 		const topicRoutes = require('../routes/topics');
 		const advertisementRoutes = require('../routes/advertisements');
 		const postRoutes = require('../routes/posts');
-		const userRoutes = require("../routes/users");
+		const userRoutes = require('../routes/users');
 
 		app.use(staticRoutes);
 		app.use(topicRoutes);
