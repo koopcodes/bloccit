@@ -5,6 +5,10 @@ module.exports = class ApplicationPolicy {
 		this.record = record;
 	}
 
+	_isMember() {
+		return this.user && this.user.role == 'member';
+	}
+
 	// #2 _isOwner is a helper method and that checks that a record is present and the user owns it. _isAdmin checks that a user is present and that the user is an admin user.
 	_isOwner() {
 		return this.record && this.record.userId == this.user.id;
