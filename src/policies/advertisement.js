@@ -1,6 +1,6 @@
 const ApplicationPolicy = require('./application');
 
-module.exports = class PostPolicy extends ApplicationPolicy {
+module.exports = class AdvertisementPolicy extends ApplicationPolicy {
 	// #2
 	new() {
 		return this._isMember() || this._isAdmin();

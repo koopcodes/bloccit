@@ -1,4 +1,5 @@
 const advertisementQueries = require('../db/queries.advertisements.js');
+const Authorizer = require('../policies/post');
 
 module.exports = {
 	index(req, res, next) {
@@ -12,10 +13,18 @@ module.exports = {
 	},
 
 	new(req, res, next) {
-		res.render('advertisements/new');
+		const authorized = new Authorizer(req.user).new();
+		if (authorized) {
+			res.render('advertisements/new');
+		} else {
+			req.flash('notice', 'You are not authorized to do that.');
+			res.redirect('/advertisements');
+		}
 	},
 
 	create(req, res, next) {
+		const authorized = new Authorizer(req.user).create();
+		if (authorized) {
 		let newAdvertisement = {
 			title: req.body.title,
 			description: req.body.description,
@@ -27,6 +36,10 @@ module.exports = {
 				res.redirect(303, `/advertisements/${advertisement.id}`);
 			}
 		});
+		} else {
+				req.flash('notice', 'You are not authorized to do that.');
+				res.redirect('/advertisements');
+		}
 	},
 
 	show(req, res, next) {
