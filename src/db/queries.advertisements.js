@@ -35,15 +35,7 @@ module.exports = {
 			where: { id },
 		})
 			.then(advertisement => {
-				const authorized = new Authorizer(req.user, post).destroy();
-				if (authorized) {
-					advertisement.destroy().then(res => {
-						callback(null, advertisement);
-					});
-				} else {
-					req.flash('notice', 'You are not authorized to do that.');
-					callback(401);
-				}
+				callback(null, advertisement);
 			})
 			.catch(err => {
 				callback(err);
@@ -55,22 +47,17 @@ module.exports = {
 			if (!advertisement) {
 				return callback('Advertisement not found');
 			}
-			const authorized = new Authorizer(req.user, post).update();
-			if (authorized) {
-				advertisement
-					.update(updatedAdvertisement, {
-						fields: Object.keys(updatedAdvertisement),
-					})
-					.then(() => {
-						callback(null, advertisement);
-					})
-					.catch(err => {
-						callback(err);
-					});
-			} else {
-				req.flash('notice', 'You are not authorized to do that.');
-				callback('Forbidden');
-			}
+
+			advertisement
+				.update(updatedAdvertisement, {
+					fields: Object.keys(updatedAdvertisement),
+				})
+				.then(() => {
+					callback(null, advertisement);
+				})
+				.catch(err => {
+					callback(err);
+				});
 		});
 	},
 };

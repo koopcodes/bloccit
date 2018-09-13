@@ -8,7 +8,7 @@
 
     <main class="container">
       <h1><%= advertisement.title %></h1>
-				<% if(currentUser.isAdmin()) { %>
+				<% if(currentUser && currentUser.isAdmin()) { %>
 				<!-- Move the edit and destroy buttons inside of a conditional so they only render if the currentUser is an admin. -->
 				<a href="/advertisements/<%= advertisement.id %>/edit" class="btn btn-warning">Edit</a>
 				<form style="display:initial" action="/advertisements/<%= advertisement.id %>/destroy" method="post">
