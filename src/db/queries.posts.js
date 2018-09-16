@@ -1,6 +1,9 @@
 const Post = require('./models').Post;
 const Topic = require('./models').Topic;
 const Authorizer = require('../policies/post');
+// We add the comment and user models so we can refer to them in the getPost method.
+const Comment = require('./models').Comment;
+const User = require('./models').User;
 
 module.exports = {
 	addPost(newPost, callback) {
@@ -13,8 +16,17 @@ module.exports = {
 			});
 	},
 
+	// We edit getPost to pass an options object that Sequelize uses when building the query. By passing the include property, we are telling it to include all objects in the table associated with the model Comment and set them as a value to the property  comments. The nested include tells Sequelize that for each comment, also include the associated User.
 	getPost(id, callback) {
-		return Post.findById(id)
+		return Post.findById(id, {
+			include: [
+				{
+					model: Comment,
+					as: 'comments',
+					include: [{ model: User }],
+				},
+			],
+		})
 			.then(post => {
 				callback(null, post);
 			})
@@ -48,7 +60,8 @@ module.exports = {
 			}
 			const authorized = new Authorizer(req.user, post).update();
 			if (authorized) {
-				post.update(updatedPost, {
+				post
+					.update(updatedPost, {
 						fields: Object.keys(updatedPost),
 					})
 					.then(() => {

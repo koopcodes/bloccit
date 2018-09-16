@@ -1,0 +1,23 @@
+<!-- We check for the presence of a comment before evaluating the attributes it contains -->
+<% if(comment) { %>
+  <div style="width: 50%">
+    <hr>
+    <p>
+      <%= comment.body %>
+    </p>
+    <small class="card-subtitle mb-2 text-muted">
+ <!-- When we eager load the comments, we also load the associated user for each comment and load it to a property called User. -->
+      sent by <%= comment.User.email %> on <%= comment.createdAt %>
+    </small>
+
+ <!-- We will only display a button to delete the comment if there is a user signed in and the user owns the comment or is an admin. -->
+    <% if(currentUser && currentUser.id === comment.userId || currentUser.isAdmin()) { %>
+      <form style="display:initial"
+            action="/topics/<%= post.topicId %>/posts/<%= post.id %>/comments/<%= comment.id %>/destroy"
+            method="post">
+        <button type="submit" class="btn btn btn-sm btn-outline-danger">Delete</button>
+      </form>
+    <% } %>
+    <hr>
+  </div>
+<% } %>

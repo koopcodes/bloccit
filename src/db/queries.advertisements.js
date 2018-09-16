@@ -12,7 +12,10 @@ module.exports = {
 			});
 	},
 	addAdvertisement(newAdvertisement, callback) {
-		return Advertisement.create(newAdvertisement)
+		return Advertisement.create({
+      title: newAdvertisement.title,
+      description: newAdvertisement.description
+    })
 			.then(advertisement => {
 				callback(null, advertisement);
 			})
