@@ -1,4 +1,3 @@
-// #1 We import our dependencies and set the base path to point to /topics since comments belong to posts which belong to topics.
 const request = require('request');
 const server = require('../../src/server');
 const base = 'http://localhost:3000/topics/';
@@ -11,14 +10,12 @@ const Comment = require('../../src/db/models').Comment;
 
 describe('routes : comments', () => {
 	beforeEach(done => {
-		// #2 We define the variables we will use throughout the tests.
 		this.user;
 		this.topic;
 		this.post;
 		this.comment;
 
 		sequelize.sync({ force: true }).then(res => {
-			// #3 We create a user, topic, post, and comment and associate all
 			User.create({
 				email: 'starman@tesla.com',
 				password: 'Trekkie4lyfe',
@@ -54,8 +51,8 @@ describe('routes : comments', () => {
 							userId: this.user.id,
 							postId: this.post.id,
 						})
-							.then(coment => {
-								this.comment = coment; // store comment
+							.then(comment => {
+								this.comment = comment; // store comment
 								done();
 							})
 							.catch(err => {
@@ -71,9 +68,8 @@ describe('routes : comments', () => {
 		});
 	});
 
-	// #1 Define a context for guest user
+	// GUEST USER
 	describe('guest attempting to perform CRUD actions for Comment', () => {
-		// #2 Ensure there is no user signed in.
 		beforeEach(done => {
 			// before each suite in this context
 			request.get(
@@ -90,7 +86,6 @@ describe('routes : comments', () => {
 			);
 		});
 
-		// #3 Write a test to ensure a user who is not signed in is not able to create a comment
 		describe('POST /topics/:topicId/posts/:postId/comments/create', () => {
 			it('should not create a new comment', done => {
 				const options = {
@@ -100,7 +95,6 @@ describe('routes : comments', () => {
 					},
 				};
 				request.post(options, (err, res, body) => {
-					// #4 Make sure the comment was not created by querying the database of it.
 					Comment.findOne({ where: { body: 'This comment is amazing!' } })
 						.then(comment => {
 							expect(comment).toBeNull(); // ensure no comment was created
@@ -114,7 +108,6 @@ describe('routes : comments', () => {
 			});
 		});
 
-		// #5 Write a test to ensure a user who is not signed in is not able to destroy a comment.
 		describe('POST /topics/:topicId/posts/:postId/comments/:id/destroy', () => {
 			it('should not delete the comment with the associated ID', done => {
 				Comment.all().then(comments => {
@@ -137,9 +130,8 @@ describe('routes : comments', () => {
 		});
 	});
 
-	// Begin Member test context
-	// #1 Define a context for a signed in user.
-	describe('signed in user performing CRUD actions for Comment', () => {
+	//MEMBER USER
+	describe('member user performing CRUD actions for Comment', () => {
 		beforeEach(done => {
 			// before each suite in this context
 			request.get(
@@ -157,7 +149,6 @@ describe('routes : comments', () => {
 			);
 		});
 
-		// #2 Write a test to ensure a user who is signed in is able to create a comment
 		describe('POST /topics/:topicId/posts/:postId/comments/create', () => {
 			it('should create a new comment and redirect', done => {
 				const options = {
@@ -182,9 +173,61 @@ describe('routes : comments', () => {
 			});
 		});
 
-		// #3 Write a test to ensure a user who is signed in is able to destroy a comment
 		describe('POST /topics/:topicId/posts/:postId/comments/:id/destroy', () => {
 			it('should delete the comment with the associated ID', done => {
+				Comment.all().then(comments => {
+					const commentCountBeforeDelete = comments.length;
+
+					expect(commentCountBeforeDelete).toBe(1);
+
+					request.post(
+						`${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+						(err, res, body) => {
+							expect(res.statusCode).toBe(302);
+							Comment.all().then(comments => {
+								expect(comments.length).toBe(commentCountBeforeDelete - 1);
+								done();
+							});
+						},
+					);
+				});
+			});
+		});
+
+		describe('POST /topics/:topicId/posts/:postId/comments/:id/edit', () => {
+			it('should render a view of the edit comment form for the specified Id', done => {
+				request.get(
+					`${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/edit`,
+					(err, res, body) => {
+						expect(body).not.toContain('Edit Comment');
+						done();
+					},
+				);
+			});
+		});
+	}); // End Member Test Context
+
+	// Begin Admin Test Context
+	describe('ADMIN performing CRUD actions on comments', () => {
+		beforeEach(done => {
+			// before each suite in this context
+			request.get(
+				{
+					// mock authentication
+					url: 'http://localhost:3000/auth/fake',
+					form: {
+						role: 'admin', // mock authenticate as an admin
+						userId: this.user.id,
+					},
+				},
+				(err, res, body) => {
+					done();
+				},
+			);
+		});
+
+		describe('POST /topics/:topicId/posts/:postId/comments/:id/destroy', () => {
+			it('should delete the comment if the user is an admin', done => {
 				Comment.all().then(comments => {
 					const commentCountBeforeDelete = comments.length;
 
@@ -204,5 +247,50 @@ describe('routes : comments', () => {
 				});
 			});
 		});
-	}); //end context for signed in user
+	}); //End Admin Test Context
+
+	// Additional Member Test Context
+	describe('additional member testing', () => {
+		beforeEach(done => {
+			User.create({
+				email: 'newmember@example.com',
+				password: '123456',
+				role: 'member',
+			}).then(user => {
+				request.get(
+					{
+						url: 'http://localhost:3000/auth/fake',
+						form: {
+							role: user.role,
+							userId: user.id,
+							email: user.email,
+						},
+					},
+					(err, res, body) => {
+						done();
+					},
+				);
+			});
+		});
+
+		it('should not allow a member to delete another member\'s comment', done => {
+			Comment.all().then(comments => {
+				const commentCountBeforeDelete = comments.length;
+
+				expect(commentCountBeforeDelete).toBe(1);
+
+				request.post(
+					`${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+					(err, res, body) => {
+						expect(res.statusCode).toBe(401);
+						Comment.all().then(comments => {
+							expect(err).toBeNull();
+							expect(comments.length).toBe(commentCountBeforeDelete);
+							done();
+						});
+					},
+				);
+			});
+		});
+	});
 });
