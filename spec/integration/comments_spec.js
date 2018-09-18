@@ -205,10 +205,52 @@ describe('routes : comments', () => {
 				);
 			});
 		});
+
+		describe('POST /topics/:topicId/posts/:postId/comments/:id/destroy', () => {
+			it('should not delete the comment with the associated ID of another member', done => {
+				User.create({
+					email: 'koopdev@outlook.com',
+					password: '123456',
+				}).then(user => {
+					expect(user.email).toBe('koopdev@outlook.com');
+					expect(user.id).toBe(2);
+
+					request.get(
+						{
+							url: 'http://localhost:3000/auth/fake',
+							form: {
+								role: 'member',
+								userId: user.id,
+							},
+						},
+						(err, res, body) => {
+							done();
+						},
+					);
+
+					Comment.all().then(comments => {
+						const commentCountBeforeDelete = comments.length;
+
+						expect(commentCountBeforeDelete).toBe(1);
+
+						request.post(
+							`${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+							(err, res, body) => {
+								Comment.all().then(comments => {
+									expect(err).toBeNull();
+									expect(comments.length).toBe(commentCountBeforeDelete);
+									done();
+								});
+							},
+						);
+					});
+				});
+			});
+		});
 	}); // End Member Test Context
 
 	// Begin Admin Test Context
-	describe('ADMIN performing CRUD actions on comments', () => {
+	describe('signed in user performing CRUD actions for Comment', () => {
 		beforeEach(done => {
 			// before each suite in this context
 			request.get(
@@ -216,7 +258,7 @@ describe('routes : comments', () => {
 					// mock authentication
 					url: 'http://localhost:3000/auth/fake',
 					form: {
-						role: 'admin', // mock authenticate as an admin
+						role: 'admin', // mock authenticate as member user
 						userId: this.user.id,
 					},
 				},
@@ -227,7 +269,7 @@ describe('routes : comments', () => {
 		});
 
 		describe('POST /topics/:topicId/posts/:postId/comments/create', () => {
-			it('should create a new comment and redirect', done => {
+			it('should create a new comment and redirect for admins', done => {
 				const options = {
 					url: `${base}${this.topic.id}/posts/${this.post.id}/comments/create`,
 					form: {
@@ -251,7 +293,7 @@ describe('routes : comments', () => {
 		});
 
 		describe('POST /topics/:topicId/posts/:postId/comments/:id/destroy', () => {
-			it('should delete the comment if the user is an admin', done => {
+			it('should delete the comment with the associated ID', done => {
 				Comment.all().then(comments => {
 					const commentCountBeforeDelete = comments.length;
 
@@ -263,7 +305,7 @@ describe('routes : comments', () => {
 							expect(res.statusCode).toBe(302);
 							Comment.all().then(comments => {
 								expect(err).toBeNull();
-								expect(comments.length).toBe(commentCountBeforeDelete - 1);
+								expect(comments.length).toBe(commentCountBeforeDelete);
 								done();
 							});
 						},
@@ -271,50 +313,7 @@ describe('routes : comments', () => {
 				});
 			});
 		});
-	}); //End Admin Test Context
+	});
 
 	// Additional Member Test Context
-	describe('additional member testing', () => {
-		beforeEach(done => {
-			User.create({
-				email: 'newmember@example.com',
-				password: '123456',
-				role: 'member',
-			}).then(user => {
-				request.get(
-					{
-						url: 'http://localhost:3000/auth/fake',
-						form: {
-							role: user.role,
-							userId: user.id,
-							email: user.email,
-						},
-					},
-					(err, res, body) => {
-						done();
-					},
-				);
-			});
-		});
-
-		it("should not allow a member to delete another member's comment", done => {
-			Comment.all().then(comments => {
-				const commentCountBeforeDelete = comments.length;
-
-				expect(commentCountBeforeDelete).toBe(1);
-
-				request.post(
-					`${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
-					(err, res, body) => {
-						expect(res.statusCode).toBe(401);
-						Comment.all().then(comments => {
-							expect(err).toBeNull();
-							expect(comments.length).toBe(commentCountBeforeDelete);
-							done();
-						});
-					},
-				);
-			});
-		});
-	});
 });
