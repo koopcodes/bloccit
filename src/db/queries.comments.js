@@ -26,6 +26,7 @@ module.exports = {
 				console.log('Destroy Comment Loop in queries.comments.js entered');
 				callback(null, comment);
 			} else {
+				console.log('You are not authorized to do that. : queries.comments.js');
 				req.flash('notice', 'You are not authorized to do that.');
 				callback(401);
 			}

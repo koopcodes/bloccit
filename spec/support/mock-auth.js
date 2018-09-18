@@ -14,9 +14,9 @@ module.exports = {
 			// #5 Passport loads the authenticated user in req.user and we will do the same if id has a value. We will use the /auth/fake endpoint to mock either sign in or sign out of a user. To mock signing out, we will pass 0 in the form as a userId value in our tests. IDs are issued starting with 1, so we can be certain that 0 will never be associated with a real user.
 			if (id && id != 0) {
 				req.user = {
-					id: id,
-					email: email,
-					role: role,
+					'id': id,
+					'email': email,
+					'role': role,
 				};
 			} else if (id == 0) {
 				delete req.user;

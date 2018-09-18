@@ -15,6 +15,7 @@ module.exports = class ApplicationPolicy {
 	}
 
 	_isAdmin() {
+		console.log('Checking if User is Admin');
 		return this.user && this.user.role == 'admin';
 	}
 

@@ -226,6 +226,30 @@ describe('routes : comments', () => {
 			);
 		});
 
+		describe('POST /topics/:topicId/posts/:postId/comments/create', () => {
+			it('should create a new comment and redirect', done => {
+				const options = {
+					url: `${base}${this.topic.id}/posts/${this.post.id}/comments/create`,
+					form: {
+						body: 'This comment is amazing!',
+					},
+				};
+				request.post(options, (err, res, body) => {
+					Comment.findOne({ where: { body: 'This comment is amazing!' } })
+						.then(comment => {
+							expect(comment).not.toBeNull();
+							expect(comment.body).toBe('This comment is amazing!');
+							expect(comment.id).not.toBeNull();
+							done();
+						})
+						.catch(err => {
+							console.log(err);
+							done();
+						});
+				});
+			});
+		});
+
 		describe('POST /topics/:topicId/posts/:postId/comments/:id/destroy', () => {
 			it('should delete the comment if the user is an admin', done => {
 				Comment.all().then(comments => {
@@ -273,7 +297,7 @@ describe('routes : comments', () => {
 			});
 		});
 
-		it('should not allow a member to delete another member\'s comment', done => {
+		it("should not allow a member to delete another member's comment", done => {
 			Comment.all().then(comments => {
 				const commentCountBeforeDelete = comments.length;
 

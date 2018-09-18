@@ -1,25 +1,24 @@
 const ApplicationPolicy = require('./application');
 
 module.exports = class CommentPolicy extends ApplicationPolicy  {
-	// #2
-	new() {
-		return this._isMember() || this._isAdmin();
-	}
 
-	create() {
-		return this.new();
-	}
+	// new() {
+	// 	return this._isMember() || this._isAdmin();
+	// }
 
-	// #3
-	edit() {
-		return this._isAdmin() || this._isOwner();
-	}
+	// create() {
+	// 	return this.new();
+	// }
 
-	update() {
-		return this.edit();
-	}
+	// edit() {
+	// 	return this._isAdmin() || this._isOwner();
+	// }
 
-	destroy() {
-		return this.update();
-	}
+	// update() {
+	// 	return this.edit();
+	// }
+
+	// destroy() {
+	// 	return this.update();
+	// }
 };
