@@ -42,6 +42,26 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'postId',
 			as: 'comments',
 		});
+
+		Post.hasMany(models.Vote, {
+			foreignKey: 'postId',
+			as: 'votes',
+		});
 	};
+
+	Post.prototype.getPoints = function() {
+		// We check to see if the post has any votes. If not, we return 0
+		if (this.votes.length === 0) return 0;
+
+		// If a post has votes, then we get a count of all values, add them and return the result. The map function transforms the array. this.votes is an array of Vote objects. map turns it into an array of values. The reduce function goes over all values, reducing them until one is left, the total.
+		return this.votes
+			.map(v => {
+				return v.value;
+			})
+			.reduce((prev, next) => {
+				return prev + next;
+			});
+	};
+
 	return Post;
 };

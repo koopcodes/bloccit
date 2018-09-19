@@ -4,6 +4,7 @@ const Authorizer = require('../policies/post');
 // We add the comment and user models so we can refer to them in the getPost method.
 const Comment = require('./models').Comment;
 const User = require('./models').User;
+const Vote = require('./models').Vote;
 
 module.exports = {
 	addPost(newPost, callback) {
@@ -24,6 +25,10 @@ module.exports = {
 					model: Comment,
 					as: 'comments',
 					include: [{ model: User }],
+				},
+				{
+					model: Vote,
+					as: 'votes'
 				},
 			],
 		})
