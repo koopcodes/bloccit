@@ -1,7 +1,9 @@
 const sequelize = require('../../src/db/models/index').sequelize;
 const Topic = require('../../src/db/models').Topic;
 const Post = require('../../src/db/models').Post;
+const Comment = require('../../src/db/models').Comment;
 const User = require('../../src/db/models').User;
+const Vote = require('../../src/db/models').Vote;
 
 describe('Post', () => {
 	beforeEach(done => {
@@ -43,17 +45,18 @@ describe('Post', () => {
 		});
 	});
 
+	// BEGIN Create Test Conext
 	describe('#create()', () => {
 		it('should create a post object with a title, body, and assigned topic and user', done => {
 			Post.create({
 				title: 'Pros of Cryosleep during the long journey',
-				body: '1. Not having to answer the \'are we there yet?\' question.',
+				body: "1. Not having to answer the 'are we there yet?' question.",
 				topicId: this.topic.id,
 				userId: this.user.id,
 			})
 				.then(post => {
 					expect(post.title).toBe('Pros of Cryosleep during the long journey');
-					expect(post.body).toBe('1. Not having to answer the \'are we there yet?\' question.');
+					expect(post.body).toBe("1. Not having to answer the 'are we there yet?' question.");
 					expect(post.topicId).toBe(this.topic.id);
 					expect(post.userId).toBe(this.user.id);
 					done();
@@ -78,7 +81,9 @@ describe('Post', () => {
 				});
 		});
 	});
+	// END Create Test Conext
 
+	// BEGIN set Test Context
 	describe('#setTopic()', () => {
 		it('should associate a topic and a post together', done => {
 			Topic.create({
@@ -91,15 +96,6 @@ describe('Post', () => {
 					expect(post.topicId).toBe(newTopic.id);
 					done();
 				});
-			});
-		});
-	});
-
-	describe('#getTopic()', () => {
-		it('should return the associated topic', done => {
-			this.post.getTopic().then(associatedTopic => {
-				expect(associatedTopic.title).toBe('Expeditions to Alpha Centauri');
-				done();
 			});
 		});
 	});
@@ -119,6 +115,17 @@ describe('Post', () => {
 			});
 		});
 	});
+	// END set Test Context
+
+	//BEGIN get Test Context
+	describe('#getTopic()', () => {
+		it('should return the associated topic', done => {
+			this.post.getTopic().then(associatedTopic => {
+				expect(associatedTopic.title).toBe('Expeditions to Alpha Centauri');
+				done();
+			});
+		});
+	});
 
 	describe('#getUser()', () => {
 		it('should return the associated topic', done => {
@@ -128,4 +135,6 @@ describe('Post', () => {
 			});
 		});
 	});
+	// END get Test Context
+
 });
