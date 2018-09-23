@@ -47,13 +47,20 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'postId',
 			as: 'votes',
 		});
+
+		Post.afterCreate((post, callback) => {
+			return models.Vote.create({
+				userId: post.userId,
+				value: 1,
+				postId: post.id,
+			});
+		});
 	};
 
 	Post.prototype.getPoints = function() {
-		// We check to see if the post has any votes. If not, we return 0
-		if (this.votes.length === 0) return 0;
+		if (!this.votes || this.votes.length === 0) return 0;
 
-		// If a post has votes, then we get a count of all values, add them and return the result. The map function transforms the array. this.votes is an array of Vote objects. map turns it into an array of values. The reduce function goes over all values, reducing them until one is left, the total.
+		// The map function transforms the array.  this.votes is an array of Vote objects. map turns it into an array of  values. The reduce function goes over all values, reducing them until one is left, the total.
 		return this.votes
 			.map(v => {
 				return v.value;
@@ -61,6 +68,28 @@ module.exports = (sequelize, DataTypes) => {
 			.reduce((prev, next) => {
 				return prev + next;
 			});
+	};
+
+	Post.prototype.hasUpvoteFor = function(userId) {
+		var numberOfVotes = 0;
+
+		return this.getVotes({
+			where: {
+				userId: userId,
+				value: 1,
+			},
+		});
+	};
+
+	Post.prototype.hasDownvoteFor = function(userId) {
+		var numberOfVotes = 0;
+
+		return this.getVotes({
+			where: {
+				userId: userId,
+				value: -1,
+			},
+		});
 	};
 
 	return Post;

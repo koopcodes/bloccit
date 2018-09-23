@@ -1,4 +1,3 @@
-// Add all the dependencies for our test.
 const sequelize = require('../../src/db/models/index').sequelize;
 const Topic = require('../../src/db/models').Topic;
 const Post = require('../../src/db/models').Post;
@@ -8,13 +7,13 @@ const Vote = require('../../src/db/models').Vote;
 
 describe('Vote', () => {
 	beforeEach(done => {
-		// Define the variables that we will use throughout the tests
+		// #2
 		this.user;
 		this.topic;
 		this.post;
 		this.vote;
 
-		// Clear the database and create the objects we will use in our tests
+		// #3
 		sequelize.sync({ force: true }).then(res => {
 			User.create({
 				email: 'starman@tesla.com',
@@ -67,18 +66,18 @@ describe('Vote', () => {
 		});
 	});
 
-	// Define a suite for the create action.
+	// #1
 	describe('#create()', () => {
-		// Write a test to check that we successfully create an upvote.
+		// #2
 		it('should create an upvote on a post for a user', done => {
-			// Create an upvote for this.vote by this.user
+			// #3
 			Vote.create({
 				value: 1,
 				postId: this.post.id,
 				userId: this.user.id,
 			})
 				.then(vote => {
-					// Ensure the vote was successfully created
+					// #4
 					expect(vote.value).toBe(1);
 					expect(vote.postId).toBe(this.post.id);
 					expect(vote.userId).toBe(this.user.id);
@@ -90,7 +89,7 @@ describe('Vote', () => {
 				});
 		});
 
-		// Repeat for tests for a downvote
+		// #5
 		it('should create a downvote on a post for a user', done => {
 			Vote.create({
 				value: -1,
@@ -109,7 +108,7 @@ describe('Vote', () => {
 				});
 		});
 
-		// Check that a vote is not created without a userId or postId assigned
+		// #6
 		it('should not create a vote without assigned post or user', done => {
 			Vote.create({
 				value: 1,
@@ -127,12 +126,20 @@ describe('Vote', () => {
 					done();
 				});
 		});
+		it('should not create a vote with a value other than 1 or -1', done => {
+			Vote.create({
+				value: 2,
+				postId: this.post.id,
+				userId: this.user.id,
+			})
+				.then(vote => {})
+				.catch(err => {
+					expect(err.message).toContain('Validation isIn on value failed');
+					done();
+				});
+		});
 	});
-	// End Create Test suite
 
-	// Test setUser and getUser
-
-	// Define a suite for the setUser method
 	describe('#setUser()', () => {
 		it('should associate a vote and a user together', done => {
 			Vote.create({
@@ -165,7 +172,7 @@ describe('Vote', () => {
 		});
 	});
 
-	// Define a suite for the getUser method
+	// #2
 	describe('#getUser()', () => {
 		it('should return the associated user', done => {
 			Vote.create({
@@ -186,7 +193,6 @@ describe('Vote', () => {
 		});
 	});
 
-	// Define a suite for the setPost method
 	describe('#setPost()', () => {
 		it('should associate a post and a vote together', done => {
 			Vote.create({
@@ -222,7 +228,7 @@ describe('Vote', () => {
 		});
 	});
 
-	// Define a suite for the getPost method
+	// #2
 	describe('#getPost()', () => {
 		it('should return the associated post', done => {
 			Vote.create({
@@ -233,6 +239,7 @@ describe('Vote', () => {
 				.then(vote => {
 					this.comment.getPost().then(associatedPost => {
 						expect(associatedPost.title).toBe('My first visit to Proxima Centauri b');
+
 						done();
 					});
 				})
@@ -242,4 +249,106 @@ describe('Vote', () => {
 				});
 		});
 	});
+
+	describe('#getPoints()', () => {
+		it('should return all the points for the associated post', done => {
+			Vote.create({
+				value: 1,
+				postId: this.post.id,
+				userId: this.user.id,
+			}).then(vote => {
+				this.vote = vote;
+
+				Post.create({
+					title: 'Dress code on Proxima b',
+					body: 'Spacesuit, space helmet, space boots, and space gloves',
+					topicId: this.topic.id,
+					userId: this.user.id,
+				}).then(newPost => {
+					// check vote not associated with newPost
+					expect(this.vote.postId).toBe(this.post.id);
+
+					// update post reference for vote
+					this.vote.setPost(newPost).then(vote => {
+						// ensure it was updated
+						expect(vote.postId).toBe(newPost.id);
+						expect(newPost.getPoints()).toBe(0);
+						done();
+					});
+				});
+			});
+		});
+	}); // end getPoints()
+
+	describe('#hasUpvoteFor()', () => {
+		it('should return true if the user with the matching userId has an upvote for a post', done => {
+			// create an upvote for a post
+			Vote.create({
+				value: 1,
+				postId: this.post.id,
+				userId: this.user.id,
+			}).then(vote => {
+				this.vote = vote;
+
+				Post.create({
+					title: 'Testing hasUpvoteFor',
+					body: 'These tests are hard',
+					topicId: this.topic.id,
+					userId: this.user.id,
+				}).then(newPost => {
+					// check vote not associated with newPost
+					expect(this.vote.postId).not.toBe(newPost.id);
+
+					// update post reference for vote
+					this.vote.setPost(newPost).then(vote => {
+						// ensure it was updated
+						expect(vote.postId).toBe(newPost.id);
+						expect(this.vote.userId).toBe(newPost.userId);
+						// call hasUpvoteFor on Post object with userId of new post
+						newPost.hasUpvoteFor(newPost.userId).then(votes => {
+							// if votes.length > 0, that means there is a vote object with value of 1
+							expect(votes.length > 0).toBe(true);
+							done();
+						});
+					});
+				});
+			});
+		});
+	}); //end hasUpvoteFor()
+
+	describe('#hasDownvoteFor()', () => {
+		it('should return true if the user with the matching userId has an downvote for a post', done => {
+			// create a downvote for a post
+			Vote.create({
+				value: -1,
+				postId: this.post.id,
+				userId: this.user.id,
+			}).then(vote => {
+				this.vote = vote;
+
+				Post.create({
+					title: 'Testing hasDownvoteFor',
+					body: 'These tests are getting easier?',
+					topicId: this.topic.id,
+					userId: this.user.id,
+				}).then(newPost => {
+					// check vote not associated with newPost
+					expect(this.vote.postId).not.toBe(newPost.id);
+
+					// update post reference for vote
+					this.vote.setPost(newPost).then(vote => {
+						// ensure it was updated
+						expect(vote.postId).toBe(newPost.id);
+						expect(this.vote.userId).toBe(newPost.userId);
+						// call hasDownvoteFor on Post object with userId of new post
+						newPost.hasDownvoteFor(newPost.userId).then(votes => {
+							// if votes.length > 0, that means there is a vote object with value of -1
+							expect(votes.length > 0).toBe(true);
+							done();
+						});
+					});
+				});
+			});
+		});
+	}); //end hasDownvoteFor()
 });
