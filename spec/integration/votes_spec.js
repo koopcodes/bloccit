@@ -175,8 +175,9 @@ describe('routes : votes', () => {
 						});
 				});
 			});
-		});
+		}); // END downvote
+
 	}); //end context for signed in user
 
-	// test suites go here
+	// more test suites go here
 });
