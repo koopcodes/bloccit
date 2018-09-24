@@ -54,14 +54,6 @@ module.exports = (sequelize, DataTypes) => {
 		});
 
 		Post.afterCreate((post, callback) => {
-			return models.Vote.create({
-				userId: post.userId,
-				value: 1,
-				postId: post.id,
-			});
-		});
-
-		Post.afterCreate((post, callback) => {
 			return models.Favorite.create({
 				userId: post.userId,
 				postId: post.id,
