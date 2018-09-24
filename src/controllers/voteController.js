@@ -18,6 +18,7 @@ module.exports = {
 			res.redirect(req.headers.referer);
 		}
 	},
+
 	downvote(req, res, next) {
 		if (req.user) {
 			voteQueries.createVote(req, -1, (err, vote) => {

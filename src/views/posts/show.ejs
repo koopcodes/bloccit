@@ -13,11 +13,14 @@
          <% include ../votes/voting.ejs %>
        <% } %>
        <h1><%= post.title %></h1>
-     </div>
-      	<a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
-      		<form style="display:initial" action="/topics/<%= post.topicId %>/posts/<%= post.id %>/destroy" method="post">
-        		<button type="submit" class="btn btn-danger">Delete</button>
-      		</form>
+    	</div>
+     	<a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
+      <form style="display:initial" action="/topics/<%= post.topicId %>/posts/<%= post.id %>/destroy" method="post">
+      	<button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+			<% if(currentUser) { %>
+     		<% include ../favorites/favoriting.ejs %>
+   		<% } %>
       <p><%= post.body %></p>
 
 			<section id="comment-form">

@@ -5,6 +5,8 @@ const Authorizer = require('../policies/post');
 const Comment = require('./models').Comment;
 const User = require('./models').User;
 const Vote = require('./models').Vote;
+// Edit queries.posts.js to eager load favorites when we retrieve the Post object in  getPost
+const Favorite = require('./models').Favorite;
 
 module.exports = {
 	addPost(newPost, callback) {
@@ -24,12 +26,10 @@ module.exports = {
 				{
 					model: Comment,
 					as: 'comments',
-					include: [{ model: User }],
+					include: [{ model: User, as: 'user' }],
 				},
-				{
-					model: Vote,
-					as: 'votes',
-				},
+				{ model: Vote, as: 'votes' },
+				{ model: Favorite, as: 'favorites' },
 			],
 		})
 			.then(post => {
