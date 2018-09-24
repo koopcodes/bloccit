@@ -39,10 +39,9 @@ module.exports = (sequelize, DataTypes) => {
 		});
 
 		User.hasMany(models.Favorite, {
-     foreignKey: "userId",
-     as: "favorites"
-   });
-
+			foreignKey: 'userId',
+			as: 'favorites',
+		});
 	};
 
 	// We define an isAdmin method in the interface of the User model. The method will return true if the user has a role of admin. This allows us to write less code every time we need to check if a user is an admin.

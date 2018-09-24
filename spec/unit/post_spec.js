@@ -50,13 +50,13 @@ describe('Post', () => {
 		it('should create a post object with a title, body, and assigned topic and user', done => {
 			Post.create({
 				title: 'Pros of Cryosleep during the long journey',
-				body: "1. Not having to answer the 'are we there yet?' question.",
+				body: '1. Not having to answer the \'are we there yet?\' question.',
 				topicId: this.topic.id,
 				userId: this.user.id,
 			})
 				.then(post => {
 					expect(post.title).toBe('Pros of Cryosleep during the long journey');
-					expect(post.body).toBe("1. Not having to answer the 'are we there yet?' question.");
+					expect(post.body).toBe('1. Not having to answer the \'are we there yet?\' question.');
 					expect(post.topicId).toBe(this.topic.id);
 					expect(post.userId).toBe(this.user.id);
 					done();

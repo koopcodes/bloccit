@@ -10,7 +10,12 @@ const Favorite = require('./models').Favorite;
 
 module.exports = {
 	addPost(newPost, callback) {
-		return Post.create(newPost)
+		return Post.create({
+			title: newPost.title,
+			body: newPost.body,
+			topicId: newPost.topicId,
+			userId: newPost.userId,
+		})
 			.then(post => {
 				callback(null, post);
 			})
@@ -26,7 +31,7 @@ module.exports = {
 				{
 					model: Comment,
 					as: 'comments',
-					include: [{ model: User, as: 'user' }],
+					include: [{ model: User }],
 				},
 				{ model: Vote, as: 'votes' },
 				{ model: Favorite, as: 'favorites' },
@@ -81,24 +86,4 @@ module.exports = {
 			}
 		});
 	},
-
-	// hasUpvoteFor(userId, callback) {
-	// 	return Vote.findById(userId).then(vote => {
-	// 		if (vote.value === 1) {
-	// 			return callback(true);
-	// 		} else {
-	// 			return callback(false);
-	// 		}
-	// 	});
-	// },
-
-	// hasDownvoteFor(userId, callback) {
-	// 	return Vote.findById(userId).then(vote => {
-	// 		if (vote.value === -1) {
-	// 			return callback(true);
-	// 		} else {
-	// 			return callback(false);
-	// 		}
-	// 	});
-	// },
 };

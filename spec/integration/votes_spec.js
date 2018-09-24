@@ -84,7 +84,7 @@ describe('routes : votes', () => {
 					Vote.findOne({
 						// look for the vote, should not find one.
 						where: {
-							userId: this.user.id,
+							userId: 0,
 							postId: this.post.id,
 						},
 					})
