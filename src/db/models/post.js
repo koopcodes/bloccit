@@ -59,15 +59,15 @@ module.exports = (sequelize, DataTypes) => {
 				postId: post.id,
 			});
 		});
-	};
 
-	Post.afterCreate((post, callback) => {
-		return models.Vote.create({
-			userId: post.userId,
-			value: 1,
-			postId: post.id,
+		Post.afterCreate((post, callback) => {
+			return models.Vote.create({
+				userId: post.userId,
+				value: 1,
+				postId: post.id,
+			});
 		});
-	});
+	};
 
 	Post.prototype.getPoints = function() {
 		if (!this.votes || this.votes.length === 0) return 0;
@@ -109,6 +109,17 @@ module.exports = (sequelize, DataTypes) => {
 			return favorite.userId == userId;
 		});
 	}; // getFavoriteFor will be called with a userId as an argument. It will check to see if a  Favorite object matching the userId passed into the method is found and if so, return it. In the view, we will be able to call this method and will either receive a  Favorite object if the user has favorited the post or nothing if the user has not favorited the post.
+
+	// Define the scope by calling addScope on the model. addScope takes the scope name as the first argument. The second argument can be an object with the query or a function. We use a function in this case since the userId will be variable
+	Post.addScope('lastFiveFor', userId => {
+		// The function parameter returns the implemented query with the passed in userId
+		return {
+			where: { userId: userId },
+			// We set a limit which establishes the maximum number of records the query will return. order tells Sequelize what attribute to sort by and in which direction.
+			limit: 5,
+			order: [['createdAt', 'DESC']],
+		};
+	});
 
 	return Post;
 };

@@ -49,4 +49,18 @@ module.exports = {
 			}
 		});
 	},
+
+	show(req, res, next) {
+		// Call the getUser method, pass it the ID of the user we are trying to visit
+		userQueries.getUser(req.params.id, (err, result) => {
+			// getUser will send back an object. If the user property of result is not defined that means no user with the passed ID was found.
+			if (err || result.user === undefined) {
+				req.flash('notice', 'No user found with that ID.');
+				res.redirect('/');
+			} else {
+				// If the request was successfully handled, we render the view and pass in the unpacked object
+				res.render('users/show', { ...result });
+			}
+		});
+	},
 };

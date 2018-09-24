@@ -18,6 +18,9 @@
 					<!-- #1 We use the currentUser variable from the middleware function we defined while setting up Passport. If it returns a truthy value, a user is signed in. Inside, we use a link that will sign out the user -->
 					<% if(currentUser) { %>
 						<li class="nav-item">
+       				<a class="nav-link" href="/users/<%= currentUser.id %>">Profile</a>
+     				</li>
+						<li class="nav-item">
 							<a class="nav-link" href="/users/sign_out">Sign out</a>
 						</li>
 					<% } else { %>
