@@ -42,6 +42,20 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'userId',
 			as: 'favorites',
 		});
+
+		User.addScope('allFavoritedPosts', userId => {
+			// return user, and eager load all their favorites
+			return {
+				include: [
+					{
+						model: models.Favorite,
+						as: 'favorites',
+					},
+				],
+				where: { id: userId },
+			};
+		});
+
 	};
 
 	// We define an isAdmin method in the interface of the User model. The method will return true if the user has a role of admin. This allows us to write less code every time we need to check if a user is an admin.

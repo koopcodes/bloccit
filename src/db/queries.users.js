@@ -35,19 +35,42 @@ module.exports = {
 			} else {
 				// Otherwise, store the resulting user
 				result['user'] = user;
+
 				// Execute the scope on Post to get the last five posts made by the user
 				Post.scope({ method: ['lastFiveFor', id] })
 					.all()
 					.then(posts => {
-						// Store the result in the result object
-						result['posts'] = posts;
+						result['posts'] = posts; // Store the result in the result object
+
 						// Execute the scope on Comment to get the last five comments made by the user.
 						Comment.scope({ method: ['lastFiveFor', id] })
 							.all()
 							.then(comments => {
-								// Store the result in the object and pass the object to the callback
-								result['comments'] = comments;
-								callback(null, result);
+								result['comments'] = comments; // Store the result in the object
+
+								// Execute the scope on User to get tall favorites made by the user.
+								User.scope({ method: ['allFavoritedPosts', id] })
+									.all()
+									.then(favorites => {
+										let userFavorites = JSON.parse(JSON.stringify(favorites));
+										let favoritePostsId = [];
+
+										userFavorites[0].favorites.forEach(favorite => {
+											favoritePostsId.push(favorite.postId);
+										});
+
+										var allFavorites = [];
+										Post.findAll().then(allPosts => {
+											allPosts.forEach(thisPost => {
+												if (favoritePostsId.includes(thisPost.id)) {
+													allFavorites.push({ id: thisPost.id, title: thisPost.title, topicId: thisPost.topicId });
+												}
+											});
+
+											result['allFavorites'] = allFavorites; // Store the result in the object
+											callback(null, result);								 // Pass Object using callback
+										});
+									});
 							})
 							.catch(err => {
 								callback(err);
