@@ -19,10 +19,12 @@ describe('User', () => {
 		// #2 We write a test to ensure the successful creation of a user with the right attribute values
 		it('should create a User object with a valid email and password', done => {
 			User.create({
+				name: 'PrimeUser',
 				email: 'user@example.com',
 				password: '1234567890',
 			})
 				.then(user => {
+					expect(user.name).toBe('PrimeUser'),
 					expect(user.email).toBe('user@example.com');
 					expect(user.id).toBe(1);
 					done();
@@ -36,6 +38,7 @@ describe('User', () => {
 		// #3 We attempt, and fail, to create a user with a wrongly formatted email
 		it('should not create a user with invalid email or password', done => {
 			User.create({
+				name: 'PrimeUser',
 				email: 'don\'t panic',
 				password: '1234567890',
 			})
